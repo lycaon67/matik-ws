@@ -1,0 +1,74 @@
+[
+    {
+        "id": 18,
+        "name": "temperature",
+        "status": "32.20",
+        "device_id": 8,
+        "room_id": "67a3a85ada694c51b342c3005243bd68",
+        "type": 1
+    },
+    {
+        "id": 19,
+        "name": "huminity",
+        "status": "90.50",
+        "device_id": 8,
+        "room_id": "67a3a85ada694c51b342c3005243bd68",
+        "type": 2
+    },
+    {
+        "id": 21,
+        "name": "ctr1",
+        "status": "{\"on\": false}",
+        "device_id": 10,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 4
+    },
+    {
+        "id": 22,
+        "name": "ctr2",
+        "status": "{\"on\": false}",
+        "device_id": 10,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 4
+    },
+    {
+        "id": 23,
+        "name": "Light",
+        "status": "{\"on\": true}",
+        "device_id": 11,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 5
+    },
+    {
+        "id": 24,
+        "name": "Tv",
+        "status": "{\"on\": true}",
+        "device_id": 11,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 4
+    },
+    {
+        "id": 25,
+        "name": "light",
+        "status": "{\"on\": true}",
+        "device_id": 11,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 4
+    },
+    {
+        "id": 26,
+        "name": "light",
+        "status": "{\"on\": true}",
+        "device_id": 11,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 4
+    },
+    {
+        "id": 27,
+        "name": "door",
+        "status": "{\"on\": true}",
+        "device_id": 9,
+        "room_id": "a80407228f8a4b4ea0f9c4a77dec94be",
+        "type": 3
+    }
+]
