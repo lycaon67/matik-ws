@@ -35,22 +35,37 @@ function getNonMatchingIndices(arr1, arr2) {
   return nonMatchingIndices;
 }
 
-function get_device_home(deviceId) {
+function get_channel_info(channel) {
   return new Promise(function(resolve, reject){
-    let sql = `SELECT * FROM devices WHERE id = '${deviceId.replaceAll("-","")}'`
-    dbConn.query(sql, async function(err,rows)     {
+    let sql = `SELECT * FROM channels WHERE id = '${channel}'`
+    dbConn.query(sql, function(err,rows)     {
       if(err) {
         reject(err)
       } else {
-        resolve(rows[0]);
+        // console.log("[channel]", channel, rows[0]);
+        resolve(rows[0])
+      }
+    });
+  })
+}
+
+function get_home_info(id) {
+  return new Promise(function(resolve, reject){
+    let sql = `SELECT * FROM homes WHERE id = '${id}'`
+    dbConn.query(sql, function(err,rows)     {
+      if(err) {
+        reject(err)
+      } else {
+        resolve(rows[0])
       }
     });
   })
 }
 
 
+
+
 function get_device(homeId){
-  console.log("[DEBUG] get_device");
   return new Promise(function(resolve, reject){
     let sql = `SELECT * FROM devices WHERE home_id = '${homeId}'`
     dbConn.query(sql, async function(err,rows)     {
@@ -126,30 +141,24 @@ io.on("connection", (socket) => {
         if (err) throw err;
         if (result) {
           if(JSON.stringify(prev_devices) == JSON.stringify(result)){
-            console.log("[DEBUG] DB listener: device is not updated");
+            
           }else{
-            console.log("[DEBUG] DB listener: device is updated");
             let temp_device = []
             for( const [idx, res] of result.entries()){
-              console.log("[debug][test]", prev_devices[idx] != null, String(prev_devices[idx]?.updated_at), String(res?.updated_at), String(prev_devices[idx]?.updated_at) != String(res?.updated_at));
-                if(prev_devices[idx] != null){
-                  if(String(prev_devices[idx]?.updated_at) != String(res?.updated_at)){
-                    temp_device.push(res)
-                  }
+              if(prev_devices[idx] != null){
+                if(String(prev_devices[idx]?.updated_at) != String(res?.updated_at)){
+                  temp_device.push(res)
                 }
+              }
             }
             
-            console.log("[DEBUG] DB listener: temp device:", temp_device);
             const grouped = temp_device.reduce((res, currentItem) => {
               (res[currentItem.home_id] = res[currentItem.home_id] || []).push(currentItem);
               return res;
             }, {});
-            console.log("[DEBUG] DB listener: grouped:", grouped);
 
   
             Object.keys(grouped).map(async (homeId) => {
-
-              console.log("[DEBUG] DB listener: home:", homeId);
               socket.emit(`db_devices_${homeId}`, null);
             })
           }
@@ -171,8 +180,7 @@ io.on("connection", (socket) => {
   })
 
 
-  socket.on("channel", async(homeId, data) => {
-    console.log(`[${new Date().getMinutes() + ':' + new Date().getSeconds()}][Info] update_channel`);
+  socket.on("channel", async(homeId, data, userData) => {
     await update_channel(JSON.parse(data))
       .then(async (res) => {
         await get_device(homeId.replaceAll("-",""))
@@ -183,6 +191,9 @@ io.on("connection", (socket) => {
               throw err
           })
         // io.emit("home_devices", devices)
+        let channelInfo = await get_channel_info(JSON.parse(data)?.channelId)
+        let homeInfo = await get_home_info(homeId)
+        console.log(`[Info] Device: ${channelInfo?.device_id} - Channel: ${channelInfo?.id}-[${channelInfo?.name}] in Home ${homeInfo?.id}-[${homeInfo?.name}] is updated by ${userData?.username}`);
         io.emit(`devices_${homeId}`, devices);
       })
   });
@@ -190,7 +201,6 @@ io.on("connection", (socket) => {
 
   socket.on("home_device", async(homeId) => {
     if(homeId){
-      console.log(`[${new Date().getMinutes() + ':' + new Date().getSeconds()}][Info] home_device : ${homeId}`);
       socket.join(homeId);
       await get_device(homeId)
         .then((res)=>{
